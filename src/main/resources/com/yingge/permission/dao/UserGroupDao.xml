@@ -1,0 +1,89 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 	<typeAlias alias="UserVO" type="com.yingge.permission.domain.UserVO" />
+        <typeAlias alias="GroupVO" type="com.yingge.permission.domain.GroupVO" />
+        <typeAlias alias="UserGroupVO" type="com.yingge.permission.domain.UserGroupVO" />
+        <typeAlias alias="UserDao" type="com.yingge.permission.dao.UserDao" />
+        <typeAlias alias="GroupDao" type="com.yingge.permission.dao.GroupDao" />
+    <typeAlias alias="UserGroupDao" type="com.yingge.permission.dao.UserGroupDao" /> -->
+	<mapper namespace="com.yingge.permission.dao.UserGroupDao">
+	<resultMap type="com.yingge.permission.domain.UserGroupVO" id="resultUserGroup">
+		<id column="user_group_id" property="userGroupId"/>
+		<result column="user_id" property="userId"/>
+		<result column="group_id" property="groupId"/>
+	</resultMap>
+	<resultMap type="com.yingge.permission.domain.UserVO" id="resultUser">
+		<id column="user_id" property="userId"/>
+		<result column="user_name" property="userName"/>
+		<result column="region" property="region"/>
+		<result column="country" property="country"/>
+	</resultMap>
+	<resultMap type="com.yingge.permission.domain.GroupVO" id="resultGroup">
+			<id property="groupId" column="group_id"/>
+			<result column="group_name" property="groupName"/>
+			<result column="description" property="description"/>			
+	</resultMap>
+	<parameterMap type="com.yingge.permission.domain.UserGroupVO" id="parameterUserGroupMap">
+		<parameter property="userGroupId"/>
+		<parameter property="userId"/>
+		<parameter property="groupId"/>
+	</parameterMap> 
+	
+<!-- 	<insert id="insertUser" parameterType="UserVO" useGeneratedKeys="true"
+    keyProperty="userId">	 -->
+	<insert id="insert" parameterMap="parameterUserGroupMap">	
+		INSERT INTO user_group_t(user_group_id,user_id,group_id)
+		VALUES(#{userGroupId},#{userId},#{groupId});
+	</insert>   
+	
+<!-- 	<resultMap type="UserVO" id="resultUserGroup">
+		<result property="id" column="group_id"/>
+		<result property="name" column="name"/>
+		<collection property="groups" column="id" select="com.yiibai.maper.UserGroupMaper.getGroupsByUserId"/>
+	</resultMap> -->
+	
+	<select id="getOne" resultMap="resultUserGroup" parameterType="string">
+		SELECT *
+		FROM user_group_t
+		WHERE user_grou_id=#{userGroupId}
+	</select> 
+	<select id="getAll" resultMap="resultUserGroup">
+		SELECT *
+		FROM user_group_t
+	</select> 
+	<select id="getUsersByGroupId" resultMap="resultUser">
+		SELECT u.*
+		FROM user_group_t ug
+		join user_t u
+		on ug.user_id=u.user_id and ug.group_id=#{groupId}		
+	</select> 
+	<select id="getGroupsByUserId" resultMap="resultGroup">
+		SELECT g.*
+		FROM user_group_t ug
+		join group_t g
+		on ug.group_id=g.group_id and ug.user_id=#{userId}		
+	</select> 
+	<delete id="delete" parameterType="string">
+		delete
+		FROM user_group_t
+		WHERE user_group_id=#{userGroupId}
+	</delete>
+	<delete id="deleteByUserId" parameterType="string">
+		delete
+		FROM user_group_t
+		WHERE user_id=#{userId}
+	</delete>
+	<delete id="deleteByGroupId" parameterType="string">
+		delete
+		FROM user_group_t
+		WHERE group_id=#{groupId}
+	</delete>
+	<update id="update"  parameterMap="parameterUserGroupMap">
+		update user_group_t
+		set 
+		group_id=#{groupId},
+		user_id=#{userId},
+		where user_group_id=#{userGroupId}
+	</update>
+</mapper>
